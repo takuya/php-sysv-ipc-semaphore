@@ -42,6 +42,30 @@ class IPCSemaphore {
   }
   
   /**
+   * @param callable $fn
+   * @return mixed
+   */
+  public function withLock(callable $fn):mixed{
+    try{
+      $this->acquire();
+      return $fn($this);
+    } finally {
+      $this->release();
+    }
+  }
+  public function lock($non_block=false):object{
+    return new class($this,$non_block){
+      
+      public function __construct(protected IPCSemaphore $parent,$non_block) {
+        $this->parent->acquire($non_block);
+      }
+      public function __destruct() {
+        $this->parent->release();
+      }
+    };
+  }
+  
+  /**
    * @param bool $non_blocking
    * @return bool
    */

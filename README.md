@@ -35,6 +35,45 @@ $semaphore->release();
 $semaphore->destroy();
 ```
 
+## More easy way to use semaphore
+Using semaphore with callback
+```php
+<?php
+$semaphore = new IPCSemaphore('semphore_name');
+$ret = $semaphore->withLock(function(){
+   // do something in lock
+   echo "run in lock";
+   return 1234;
+});
+$ret === 1234; //=> true
+```
+Using easy locking ( release() by destructor ).
+```php
+<?php
+function RunWithLock(){
+  $semaphore = new IPCSemaphore('sem_name');
+  // $lock is local scope.
+  // auto released by destructor on garbage collection.
+  $lock = $semaphore->lock();
+  return 1234;
+}
+/// 
+RunWithLock();
+```
+Using semaphore with try-finally
+```php
+<?php
+function sample($msg){
+  try {
+    $sem = new IPCSemaphore(str_rand(10));
+    $sem->acquire(); 
+    return $msg; // finally called before return.
+  } finally {
+    $sem->release();
+  }
+}
+```
+
 ### semaphore and thread-mutex
 
 Compare to Thread and SyncMutex , SysV semaphore has one big advantage in PHP.
