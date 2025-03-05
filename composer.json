@@ -1,0 +1,40 @@
+{
+  "name": "takuya/php-sysv-ipc-semaphore",
+  "description": "php sysv semaphore wrapper",
+  "type": "library",
+  "version": "0.1",
+  "license": "GPL-3.0-or-later",
+  "keywords": [
+    "php",
+    "sysV",
+    "IPC",
+    "semaphore"
+  ],
+  "autoload": {
+    "psr-4": {
+      "Takuya\\SysV\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    },
+    "files": [
+      "tests/helper/str_rand.php",
+      "tests/helper/temp_dir.php"
+    ]
+  },
+  "authors": [
+    {
+      "name": "takuya",
+      "email": "55338+takuya@users.noreply.github.com"
+    }
+  ],
+  "require": {
+    "ext-sysvsem": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10",
+    "ext-pcntl": "*"
+  }
+}
