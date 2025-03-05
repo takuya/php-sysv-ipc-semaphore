@@ -45,7 +45,7 @@ jobs:
           $ret[] = $semaphore->acquire();
           $ret[] = $semaphore->acquire(true);
           $ret[] = $semaphore->release();
-          $ret[] = $semaphore->destory();
+          $ret[] = $semaphore->destroy();
           var_dump( $ret == [true,true,true,true]);
           EOS
           cat sample.php
