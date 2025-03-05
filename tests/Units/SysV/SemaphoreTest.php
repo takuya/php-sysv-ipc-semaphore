@@ -3,7 +3,6 @@
 namespace Tests\Units\SysV;
 
 use Tests\TestCase;
-use Takuya\SysV\IPCSharedMem;
 use Takuya\SysV\IPCSemaphore;
 use function Takuya\Helpers\str_rand;
 

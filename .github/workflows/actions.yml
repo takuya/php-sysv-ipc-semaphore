@@ -36,17 +36,17 @@ jobs:
         shell: bash
         run: |
           php -v
-          composer require takuya/php-sysv-ipc-shared-memory
+          composer require takuya/php-sysv-ipc-semaphore
           cat <<'EOS' > sample.php
           <?php
           require_once 'vendor/autoload.php';
-          use Takuya\SysV\IPCSharedMem;
-          $uniq_name = 'shm_name';
-          $shm = new IPCSharedMem($uniq_name);
-          $shm->put('message');
-          $shm->get();
-          $ret = $shm->destroy();
-          var_dump( $ret == 'message');
+          use Takuya\SysV\IPCSemaphore;
+          $semaphore = new IPCSemaphore('sample');
+          $ret[] = $semaphore->acquire();
+          $ret[] = $semaphore->acquire(true);
+          $ret[] = $semaphore->release();
+          $ret[] = $semaphore->destory();
+          var_dump( $ret == [true,true,true,true]);
           EOS
           cat sample.php
           php sample.php
