@@ -45,20 +45,30 @@ class IPCSemaphore {
    * @param callable $fn
    * @return mixed
    */
-  public function withLock(callable $fn):mixed{
-    try{
+  public function withLock( callable $fn ):mixed {
+    try {
       $this->acquire();
+      
       return $fn($this);
     } finally {
       $this->release();
     }
   }
-  public function lock($non_block=false):object{
-    return new class($this,$non_block){
+  
+  /**
+   * This returns object which destructor has release().
+   * Once exit scope, release() will be called automatically by garbage collection.
+   * This method for the purpose of blocking.
+   * @param bool $non_block for testing.
+   * @return object
+   */
+  public function lock( bool $non_block = false ):object {
+    return new class( $this, $non_block ) {
       
-      public function __construct(protected IPCSemaphore $parent,$non_block) {
+      public function __construct( protected IPCSemaphore $parent, $non_block ) {
         $this->parent->acquire($non_block);
       }
+      
       public function __destruct() {
         $this->parent->release();
       }
