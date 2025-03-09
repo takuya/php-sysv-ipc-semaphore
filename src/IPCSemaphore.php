@@ -7,16 +7,11 @@ class IPCSemaphore {
   protected int            $ipc_key;
   protected \SysvSemaphore $sem;
   
+  public static function str_to_key(string $str):int{
+    return crc32($str)&0x7FFFFFFF;
+  }
   protected function key():int {
-    if( empty($this->ipc_key) ) {
-      $seed = crc32($this->name);
-      mt_srand($seed);
-      $fixed_random_unsigned_int32_seed_by_name = mt_rand(0, PHP_INT_MAX)&0x7FFFFFFF;
-      mt_srand(time());
-      $this->ipc_key = $fixed_random_unsigned_int32_seed_by_name;
-    }
-    
-    return $this->ipc_key;
+    return $this->ipc_key??=static::str_to_key($this->name);
   }
   
   /**
