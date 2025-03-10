@@ -27,7 +27,7 @@ composer install
 $uniq_name = 'semphore_name';
 $semaphore = new IPCSemaphore($uniq_name);
 $semaphore->acquire();// first acquire must be success.
-$semaphore->acquire(true);// multiple acquire must be failed.
+$semaphore->acquire(true);// multiple acquired result true
 $semaphore->release();
 //
 // remove from IPC
