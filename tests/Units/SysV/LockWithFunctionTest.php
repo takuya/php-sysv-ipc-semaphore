@@ -17,6 +17,30 @@ class LockWithFunctionTest extends TestCase {
     $this->assertEquals($msg, $ret);
   }
   
+  public function test_sysv_lock_in_lock() {
+    //
+    $msg = str_rand();
+    $sem = new IPCSemaphore(str_rand(10));
+    $ret = $sem->withLock(function () use ( $sem, $msg ) {
+      return $sem->withLock(fn() => $msg);
+    });
+    $sem->destroy();
+    $this->assertEquals($msg, $ret);
+  }
+  
+  public function test_sysv_triple_lock_block() {
+    //
+    $msg = str_rand();
+    $sem = new IPCSemaphore(str_rand(10));
+    $ret = $sem->withLock(function () use ( $sem, $msg ) {
+      return $sem->withLock(function () use ( $sem, $msg ) {
+        return $sem->withLock(fn() => $msg);
+      });
+    });
+    $sem->destroy();
+    $this->assertEquals($msg, $ret);
+  }
+  
   public function test_sysv_lock_release_class() {
     $sem = new IPCSemaphore(str_rand(10));
     $sem->acquire();
@@ -26,7 +50,7 @@ class LockWithFunctionTest extends TestCase {
     unset($keep_lock);// call destruct
     $sem->acquire();
     $sem->destroy();
-    $this->assertFalse($ret);
+    $this->assertTrue($ret);
   }
   
   public function test_sysv_try_finally() {

@@ -13,8 +13,8 @@ class SemaphoreTest extends TestCase {
     $semaphore = new IPCSemaphore(str_rand(10));
     $ret = [];
     $ret[] = $semaphore->acquire();// first acquire must be success.
-    $ret[] = $semaphore->acquire(true) === false;// multiple acquire must be failed.
-    $ret[] = $semaphore->acquire(true) === false;// multiple acquire must be failed.
+    $ret[] = $semaphore->acquire(true) === true;// multiple acquire must be success.
+    $ret[] = $semaphore->acquire(true) === true;// multiple acquire must be success.
     $ret[] = $semaphore->release();
     $ret[] = $semaphore->acquire();
     $ret[] = $semaphore->release();

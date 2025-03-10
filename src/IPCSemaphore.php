@@ -6,17 +6,19 @@ class IPCSemaphore {
   
   protected int            $ipc_key;
   protected \SysvSemaphore $sem;
+  private bool           $acquired = false;
   
-  public static function str_to_key(string $str):int{
+  public static function str_to_key( string $str ):int {
     return crc32($str)&0x7FFFFFFF;
   }
+  
   protected function key():int {
-    return $this->ipc_key??=static::str_to_key($this->name);
+    return $this->ipc_key ??= static::str_to_key($this->name);
   }
   
   /**
    * @param string $name        pseudo name -- php sem_get() using unnamed semaphore .
-   * @param int    $max_acquire The number of processes that can acquire semaphore.
+   * @param int    $max_acquire The number of processes that can acquire semaphore.( using fork. )
    * @param int    $perm
    * @param bool   $auto_release
    */
@@ -75,14 +77,14 @@ class IPCSemaphore {
    * @return bool
    */
   public function acquire( bool $non_blocking = false ):bool {
-    return sem_acquire($this->sem, $non_blocking);
+    return $this->acquired || $this->acquired=sem_acquire($this->sem, $non_blocking);
   }
   
   /**
    * @return bool
    */
   public function release():bool {
-    return sem_release($this->sem);
+    return ( $this->acquired && sem_release($this->sem) && $this->acquired = false ) === false;
   }
   
   /**
