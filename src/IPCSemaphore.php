@@ -6,7 +6,7 @@ class IPCSemaphore {
   
   protected int            $ipc_key;
   protected \SysvSemaphore $sem;
-  private bool           $acquired = false;
+  private bool             $acquired;
   
   public static function str_to_key( string $str ):int {
     return IPCInfo::ipc_key($str);
@@ -35,7 +35,7 @@ class IPCSemaphore {
       throw new \RuntimeException('sem_get() failed.');
     }
     
-    return (bool)( $this->sem = $r );
+    return (bool)( $this->sem = $r ) && $this->acquired = false;
   }
   
   /**
@@ -77,7 +77,7 @@ class IPCSemaphore {
    * @return bool
    */
   public function acquire( bool $non_blocking = false ):bool {
-    return $this->acquired || $this->acquired=sem_acquire($this->sem, $non_blocking);
+    return $this->acquired || $this->acquired = sem_acquire($this->sem, $non_blocking);
   }
   
   /**
@@ -91,6 +91,6 @@ class IPCSemaphore {
    * @return bool
    */
   public function destroy():bool {
-    return sem_remove($this->sem);
+    return $this->release() && sem_remove($this->sem);
   }
 }
