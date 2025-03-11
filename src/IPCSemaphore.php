@@ -9,7 +9,7 @@ class IPCSemaphore {
   private bool           $acquired = false;
   
   public static function str_to_key( string $str ):int {
-    return crc32($str)&0x7FFFFFFF;
+    return IPCInfo::ipc_key($str);
   }
   
   protected function key():int {
