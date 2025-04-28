@@ -7,6 +7,7 @@ class IPCSemaphore {
   protected int            $ipc_key;
   protected \SysvSemaphore $sem;
   private bool             $acquired;
+  private ?int              $count_locked;
   
   public static function str_to_key( string $str ):int {
     return IPCInfo::ipc_key($str);
@@ -45,10 +46,12 @@ class IPCSemaphore {
   public function withLock( callable $fn ):mixed {
     try {
       $this->acquire();
+      $this->count_locked = 1 + ( $this->count_locked ?? 0 );
       
       return $fn($this);
     } finally {
-      $this->release();
+      $unset = function (){unset($this->count_locked);return true;};
+      ( 0 === --$this->count_locked ) && $unset() && $this->release();
     }
   }
   
